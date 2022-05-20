@@ -62,8 +62,13 @@ class TodoListView(Resource):
 
     def patch(self,todo_id):
         try:
-            Todo.update(todo_id)
-            return {"message": "successfully completed task"}, 200
+            data = request.get_json(force=True)
+            data["id"] = todo_id
+            serializer = TodoListSerializer(data, model_type="dict")
+            if serializer.is_valid():
+                parsed_data = serializer.data()
+                Todo.update(parsed_data['id'], parsed_data['title'], parsed_data['completed'])
+                return {"message": "successfully updated task"}, 200
         except KeyError:
             return {"message": "task not found"}, 400
         except ValueError as e:
