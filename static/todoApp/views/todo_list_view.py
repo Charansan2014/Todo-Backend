@@ -61,11 +61,16 @@ class TodoListView(Resource):
             return {"message": "something went wrong"}, 500
 
     def patch(self,todo_id):
-        """
-        TODO : Implement PATCH method
-        :return:
-        """
-        return {"message": "PATCH method not implemented"}, 501
+        try:
+            Todo.update(todo_id)
+            return {"message": "successfully completed task"}, 200
+        except KeyError:
+            return {"message": "task not found"}, 400
+        except ValueError as e:
+            return {"message": "Todo with the request id not found"}, 400
+        except Exception as e:
+            logger.error(f"Error: {e}")
+            return {"message": "something went wrong"}, 500
 
     def delete(self, todo_id):
         try:
